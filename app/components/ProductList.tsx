@@ -1,12 +1,23 @@
 import ProductCard from "./ProductCard";
 
-interface Product {
-  id: string;
-  slug: string;
-  name: string;
-  image: string;
+export interface Product {
   price: number;
+  product: any;
+  id: string;
+  attributes: {
+    label: string;
+    en_label: string;
+    slug: string;
+    desc: string;
+    en_desc: string;
+    image_url: string;
+    image_placeholder_url: string;
+    price: number;
+    medicines: any;
+  }
 }
+
+
 
 interface ProductListProps {
   products: Product[];
