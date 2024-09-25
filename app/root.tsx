@@ -9,7 +9,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
-import "./tailwind.css"; // Corrected import for CSS
+import "./tailwind.css"; 
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: "./tailwind.css" },
