@@ -1,4 +1,3 @@
-// app/routes/products/$slug.tsx
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import axios from "axios";

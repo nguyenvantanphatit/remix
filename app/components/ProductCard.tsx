@@ -14,7 +14,7 @@ interface ProductCardProps {
 export default function ProductCard({ id, attributes }: ProductCardProps) {
   const { label, desc, slug, image_url, price } = attributes;
   return (
-    <Link to={`/product/${slug}`} className="group">
+    <Link to={`/products/${attributes.slug}`} className="group">
       <h3 className="mt-4 text-sm text-gray-700">{label}</h3>
       <h3 className="mt-4 text-sm text-gray-700">{desc}</h3>
     </Link>
