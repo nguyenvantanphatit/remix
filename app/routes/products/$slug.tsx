@@ -14,7 +14,6 @@ export interface ProductDetails {
   price: number;
   createdAt: string;
 }
-
 export const loader: LoaderFunction = async ({ params }) => {
   if (!params.slug) {
     console.error("No slug provided");
