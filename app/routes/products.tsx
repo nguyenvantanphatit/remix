@@ -13,12 +13,12 @@ interface Product {
 
 export const loader: LoaderFunction = async () => {
   try {
-    const response = await fetch("https://api.echomedi.com/api/products?pagination[page]=${1}&pagination[pageSize]=${1000}");
-    console.log("Prodct=======",response.json());
+    const response = await fetch("https://api.echomedi.com/api/products?pagination[page]=1&pagination[pageSize]=10000");
     if (!response.ok) {
       throw new Error("Failed to fetch products");
     }
-    const products: Product[] = await response.json();
+    const products: any[] = await response.json();
+    console.log("Prodct=======",products);
     return json({ products });
   } catch (error) {
     console.error("Error fetching products:", error);
