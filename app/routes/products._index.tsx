@@ -22,7 +22,7 @@ export default function Products() {
       <ul>
         {images.map((image: any) => (
           <li key={image.id}>
-            <Link to={`/productDetail/${image.id}`}>{image.title}</Link> // Updated link format
+            <Link to={`/products/${image.id}`}>{image.title}</Link> // Updated link format
           </li>
         ))}
       </ul>
