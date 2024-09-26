@@ -1,5 +1,3 @@
-// app/root.tsx
-import type { LinksFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
