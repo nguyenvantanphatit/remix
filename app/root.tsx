@@ -7,7 +7,6 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
-
 export default function App() {
   return (
     <html lang="en">
@@ -18,7 +17,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <Outlet />  
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
