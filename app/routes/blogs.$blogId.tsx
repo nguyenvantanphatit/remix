@@ -1,5 +1,7 @@
 import { json, LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import ShareButtons from "~/components/ShareButton";
+import { MetaFunction } from "@remix-run/node"; 
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const [postResponse, commentsResponse] = await Promise.all([
@@ -13,10 +15,24 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return json({ post, comments });
 };
 
+export const meta: MetaFunction<typeof loader> = ({
+  data,
+}) => {
+  return [
+    { name: "title", content: data?.post?.title },
+    { property: "og:title", content: data?.post?.title },
+    { property: "og:description", content: data?.post?.body },
+    { property: "og:type", content: "article" },
+    { property: "og:url", content: `https://remix-pied-iota.vercel.app/blogs/${data?.post?.id}` },
+    { property: "og:image", content: "https://pagedone.io/asset/uploads/1696244356.png" }
+  ];
+};
+
 export default function BlogDetail() {
   const { post, comments } = useLoaderData<typeof loader>();
   const relevantComments = comments.filter((comment: any) => comment.postId === post.id);
-
+  const shareUrl = `https://remix-pied-iota.vercel.app/blogs/${post.id}`;
+  console.log("shareUrl ========", shareUrl);
   return (
     <>
       <section className="relative pt-20 pb-24 bg-indigo-600">
@@ -58,6 +74,7 @@ export default function BlogDetail() {
           </div>
         </div>
       </section>
+      <ShareButtons shareUrl={shareUrl} />
     </>
   );
 }
