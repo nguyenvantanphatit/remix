@@ -1,4 +1,4 @@
-import { LinksFunction } from "@remix-run/node";
+import type { LinksFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -11,11 +11,11 @@ import {
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
-export const links: LinksFunction = () => {
-  return [
-    { rel: 'stylesheet', href: "./tailwind.css" },
-  ];
-};
+import styles from "./tailwind.css?url";
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: styles },
+];
 
 export default function App() {
   return (
