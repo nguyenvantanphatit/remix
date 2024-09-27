@@ -2,6 +2,7 @@ import type { MetaFunction, LoaderFunction } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
 import BlogList from "~/components/BlogList";
 import { useEffect, useState } from "react";
+import * as XLSX from 'xlsx';
 
 export const meta: MetaFunction = () => [
     { title: "Remix Tailwind Starter Project" },
@@ -21,7 +22,7 @@ export default function Index() {
     const [sortedBlogs, setSortedBlogs] = useState(blogs);
     const [sortDirection, setSortDirection] = useState("ascending");
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5; // Số lượng phần tử mỗi trang là 5
+    const itemsPerPage = 5;
 
     useEffect(() => {
         sortBlogs();
@@ -49,6 +50,13 @@ export default function Index() {
     };
 
     const currentData = sortedBlogs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const exportToExcel = () => {
+        const ws = XLSX.utils.json_to_sheet(sortedBlogs);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Blogs");
+        XLSX.writeFile(wb, "BlogsData.xlsx");
+    };
 
     return (
         <>
@@ -164,6 +172,9 @@ export default function Index() {
                     </div>
                 </div>
             </div>
+            <button onClick={exportToExcel} className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Xuất Excel
+            </button>
             <BlogList blogs={blogs} />
         </>
     );
