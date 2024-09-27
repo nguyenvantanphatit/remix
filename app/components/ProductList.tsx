@@ -1,39 +1,29 @@
-import ProductCard from "./ProductCard";
-
-export interface Product {
-  price: number;
-  product: any;
-  id: string;
-  attributes: {
-    label: string;
-    en_label: string;
-    slug: string;
-    desc: string;
-    en_desc: string;
-    image_url: string;
-    image_placeholder_url: string;
-    price: number;
-    medicines: any;
-  }
-}
-
-
+import { Link } from "@remix-run/react";
 
 interface ProductListProps {
-  products: Product[];
+  images: any[];
 }
 
-export default function ProductList({ products }: ProductListProps) {
+export default function ProductList({ images }: ProductListProps) {
+  console.log(images);
   return (
-    <div className="bg-white">
-      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-        <h2 className="sr-only">Products</h2>
-        <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-          {products.map((product) => (
-            <ProductCard key={product.id} {...product} />
+    <section className="py-24 ">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 className="font-manrope text-4xl font-bold text-gray-900 text-center mb-16">Our Products Images</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {images.map((product) => (
+            <div key={product.id} className="group border border-gray-300 rounded-2xl overflow-hidden">
+              <img src="https://pagedone.io/asset/uploads/1696244317.png" alt="blogs tailwind section" className="w-full object-cover" style={{ height: "200px" }} />
+              <div className="p-4 lg:p-6 transition-all duration-300 group-hover:bg-gray-50">
+                <span className="text-indigo-600 font-medium mb-3 block">Jan 01, 2023</span>
+                <h4 className="text-xl text-gray-900 font-medium leading-8 mb-5">{product.title}</h4>
+                <p className="text-gray-500 leading-6 mb-10">{product.body}</p>
+                <Link to={`/productDetail/${product.albumId}`} className="cursor-pointer text-lg text-indigo-600 font-semibold">Read more..</Link>
+              </div>
+            </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

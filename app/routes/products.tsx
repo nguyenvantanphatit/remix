@@ -2,6 +2,7 @@ import { json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import axios from "axios";
 import type { MetaFunction } from "@remix-run/node";
+import ProductList from "~/components/ProductList";
 
 export const meta: MetaFunction = () => [
   { title: "Remix Tailwind Starter Project" },
@@ -17,16 +18,9 @@ export default function Products() {
   const { images } = useLoaderData<typeof loader>();
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-center my-8">Our Products</h1>
-      <ul>
-        {images.map((image: any) => (
-          <li key={image.id}>
-            <Link to={`/products/${image.id}`}>{image.title}</Link> // Updated link format
-          </li>
-        ))}
-      </ul>
+    <>
+      <ProductList images={images} />
       <Outlet /> 
-    </div>
+    </>
   );
 }

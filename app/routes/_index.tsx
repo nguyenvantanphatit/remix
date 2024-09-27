@@ -1,12 +1,10 @@
 import type { MetaFunction } from "@remix-run/node";
-import { json, Link, useLoaderData, Outlet } from "@remix-run/react";
-
+import { json, useLoaderData } from "@remix-run/react";
+import BlogList from "~/components/BlogList";
 
 export const meta: MetaFunction = () => [
     { title: "Remix Tailwind Starter Project" },
 ];
-
-
 
 export const loader = async () => {
     const response = await fetch("https://jsonplaceholder.typicode.com/posts");
@@ -18,15 +16,7 @@ export default function Index() {
     const blogs = 'blogs' in data ? data.blogs : [];
     return (
         <>
-            <h1>Home</h1>
-            <Link to="/products">Products</Link>
-            <ul>
-                {blogs.map((blog) => (
-                    <li key={blog.id}>
-                        <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
-                    </li>
-                ))}
-            </ul>
+            <BlogList blogs={blogs} />
         </>
     );
 }
