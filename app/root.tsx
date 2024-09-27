@@ -10,11 +10,10 @@ import {
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import styles from './tailwind.css';
 
 export const links: LinksFunction = () => {
   return [
-    { rel: 'stylesheet', href: styles },
+    { rel: 'stylesheet', href: "./tailwind.css" },
   ];
 };
 
