@@ -1,4 +1,4 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { MetaFunction, LoaderFunction } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
 import BlogList from "~/components/BlogList";
 import { useEffect, useState } from "react";
@@ -7,8 +7,11 @@ export const meta: MetaFunction = () => [
     { title: "Remix Tailwind Starter Project" },
 ];
 
-export const loader = async () => {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+export const loader: LoaderFunction = async ({ request }) => {
+    const url = new URL(request.url);
+    const start = url.searchParams.get("_start") || "0";
+    const limit = url.searchParams.get("_limit") || "50";
+    const response = await fetch(`https://jsonplaceholder.typicode.com/posts?_start=${start}&_limit=${limit}`);
     const data: { id: string, title: string, body: string, userId: string }[] = await response.json();
     return json({ blogs: data });
 };
@@ -17,6 +20,8 @@ export default function Index() {
     const { blogs } = useLoaderData<typeof loader>();
     const [sortedBlogs, setSortedBlogs] = useState(blogs);
     const [sortDirection, setSortDirection] = useState("ascending");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5; // Số lượng phần tử mỗi trang là 5
 
     useEffect(() => {
         sortBlogs();
@@ -36,8 +41,15 @@ export default function Index() {
     };
 
     const handleDelete = (id: string) => {
-        setSortedBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== id));
+        setSortedBlogs((prevBlogs: { id: string }[]) => prevBlogs.filter(blog => blog.id !== id));
     };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const currentData = sortedBlogs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
     return (
         <>
             <div className="flex flex-col">
@@ -54,13 +66,23 @@ export default function Index() {
                                         </th>
                                         <th scope="col" className="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize"> Company </th>
                                         <th scope="col" className="p-5 flex items-center gap-2 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize cursor-pointer" onClick={toggleSortDirection}> User ID
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                {sortDirection === "ascending" ? (
-                                                    <path d="M6 17H18" stroke="black" stroke-width="2" stroke-linecap="round"></path>
-                                                ) : (
-                                                    <path d="M6 7H18" stroke="black" stroke-width="2" stroke-linecap="round"></path>
-                                                )}
-                                            </svg>
+                                            {
+                                                sortDirection === "ascending" ?
+                                                    (
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M3 7H21" stroke="black" stroke-width="null" stroke-linecap="round" className="my-path"></path>
+                                                            <path d="M6 12H18" stroke="black" stroke-width="null" stroke-linecap="round" className="my-path"></path>
+                                                            <path d="M10 17H14" stroke="black" stroke-width="null" stroke-linecap="round" className="my-path"></path>
+                                                        </svg>
+                                                    ) : (
+                                                        <svg className="-rotate-180" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M3 7H21" stroke="black" stroke-width="null" stroke-linecap="round" className="my-path"></path>
+                                                            <path d="M6 12H18" stroke="black" stroke-width="null" stroke-linecap="round" className="my-path"></path>
+                                                            <path d="M10 17H14" stroke="black" stroke-width="null" stroke-linecap="round" className="my-path"></path>
+                                                        </svg>
+                                                    )
+                                            }
+
                                         </th>
                                         <th scope="col" className="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize min-w-[150px]"> Full Name & Email </th>
                                         <th scope="col" className="p-5 text-left whitespace-nowrap text-sm leading-6 font-semibold text-gray-900 capitalize"> Status </th>
@@ -68,7 +90,7 @@ export default function Index() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-300">
-                                    {sortedBlogs.map((blog) => (
+                                    {currentData.map((blog: any) => (
                                         <tr className="bg-white transition-all duration-500 hover:bg-gray-50">
                                             <td className="">
                                                 <div className="flex items-center py-5 px-5">
@@ -96,21 +118,21 @@ export default function Index() {
                                             </td>
                                             <td className="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900">
                                                 <div className="py-1.5 px-2.5 bg-emerald-50 rounded-full flex justify-center w-20 items-center gap-1">
-                                                <button className="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-indigo-600 flex item-center">
-                                                    <svg className="cursor-pointer" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path className="fill-indigo-500 group-hover:fill-white" d="M10 5L15 10L10 15" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    </svg>
-                                                </button>
-                                                <button onClick={() => handleDelete(blog.id)} className="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-red-600 flex item-center">
-                                                    <svg className="" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path className="fill-red-600 group-hover:fill-white" d="M5 5L15 15M15 5L5 15" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    </svg>
-                                                </button>
-                                                <button className="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-black flex item-center">
-                                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path className="stroke-black group-hover:stroke-white" d="M10 5V15" stroke="black" stroke-width="2.5" stroke-linecap="round"></path>
-                                                    </svg>
-                                                </button>
+                                                    <button className="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-indigo-600 flex item-center">
+                                                        <svg className="cursor-pointer" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path className="fill-indigo-500 group-hover:fill-white" d="M10 5L15 10L10 15" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                        </svg>
+                                                    </button>
+                                                    <button onClick={() => handleDelete(blog.id)} className="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-red-600 flex item-center">
+                                                        <svg className="" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path className="fill-red-600 group-hover:fill-white" d="M5 5L15 15M15 5L5 15" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                        </svg>
+                                                    </button>
+                                                    <button className="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-black flex item-center">
+                                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path className="stroke-black group-hover:stroke-white" d="M10 5V15" stroke="black" stroke-width="2.5" stroke-linecap="round"></path>
+                                                        </svg>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -121,42 +143,21 @@ export default function Index() {
                         <nav className="flex items-center justify-center py-4" aria-label="Table navigation">
                             <ul className="flex items-center justify-center text-sm h-auto gap-12">
                                 <li>
-                                    <a href="javascript:;" className="flex items-center justify-center gap-2 px-3 h-8 ml-0 text-gray-500 bg-white font-medium text-base leading-7 hover:text-gray-700">
+                                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="flex items-center justify-center gap-2 px-3 h-8 ml-0 text-gray-500 bg-white font-medium text-base leading-7 hover:text-gray-700">
                                         <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M13 15L8 10L13 5" stroke="black" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-                                        </svg> Back </a>
+                                        </svg> Back </button>
                                 </li>
+                                {[...Array(Math.ceil(sortedBlogs.length / itemsPerPage)).keys()].map(page => (
+                                    <li key={page}>
+                                        <button onClick={() => handlePageChange(page + 1)} className={`font-normal text-base leading-7 py-2.5 px-4 rounded-full transition-all duration-500 ${currentPage === page + 1 ? 'bg-indigo-600 text-white' : 'text-black bg-white hover:bg-indigo-600 hover:text-white'}`}>{page + 1}</button>
+                                    </li>
+                                ))}
                                 <li>
-                                    <ul className="flex items-center justify-center gap-4">
-                                        <li>
-                                            <a href="javascript:;" className="font-normal text-base leading-7 text-gray-500 py-2.5 px-4 rounded-full bg-white transition-all duration-500 hover:bg-indigo-600 hover:text-white">1</a>
-                                        </li>
-                                        <li>
-                                            <a href="javascript:;" className="font-normal text-base leading-7 text-gray-500 py-2.5 px-4 rounded-full bg-white transition-all duration-500 hover:bg-indigo-600 hover:text-white">2</a>
-                                        </li>
-                                        <li>
-                                            <a href="javascript:;" className="font-normal text-base leading-7 text-gray-500 py-2.5 px-4 rounded-full bg-white transition-all duration-500 hover:bg-indigo-600 hover:text-white">3</a>
-                                        </li>
-                                        <li>
-                                            <a href="javascript:;" className="font-normal text-base leading-7 text-gray-500 py-2.5 px-4 rounded-full bg-white transition-all duration-500 hover:bg-indigo-600 hover:text-white">4</a>
-                                        </li>
-                                        <li>
-                                            <a href="javascript:;" className="font-normal text-base leading-7 text-gray-500 py-2.5 px-4 rounded-full bg-white transition-all duration-500 hover:bg-indigo-600 hover:text-white">5</a>
-                                        </li>
-                                        <li>
-                                            <a href="javascript:;" className="font-normal text-base leading-7 text-gray-500 py-2.5 px-4 rounded-full">
-                                                <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M5.5 10H15.5" stroke="black" stroke-width="2.5" stroke-linecap="round"></path>
-                                                </svg>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="javascript:;" className="flex items-center justify-center gap-2 px-3 h-8 ml-0 text-gray-500 bg-white font-medium text-base leading-7 hover:text-gray-700"> next <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === Math.ceil(sortedBlogs.length / itemsPerPage)} className="flex items-center justify-center gap-2 px-3 h-8 ml-0 text-gray-500 bg-white font-medium text-base leading-7 hover:text-gray-700"> next <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M8 5L13 10L8 15" stroke="black" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
                                     </svg>
-                                    </a>
+                                    </button>
                                 </li>
                             </ul>
                         </nav>
