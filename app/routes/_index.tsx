@@ -1,5 +1,5 @@
 import type { MetaFunction, LoaderFunction } from "@remix-run/node";
-import { json, useLoaderData } from "@remix-run/react";
+import { json, Link, useLoaderData } from "@remix-run/react";
 import BlogList from "~/components/BlogList";
 import { useEffect, useState } from "react";
 import * as XLSX from 'xlsx';
@@ -106,7 +106,11 @@ export default function Index() {
                                                     <input type="checkbox" value="" className="w-5 h-5 appearance-none border border-gray-300 rounded-md mr-2 hover:border-indigo-500 hover:bg-indigo-100 checked:bg-no-repeat checked:bg-center checked:border-indigo-500 checked:bg-indigo-100" />
                                                 </div>
                                             </td>
-                                            <td className="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900">{blog.title}</td>
+                                            <td className="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900">
+                                                <Link to={`/blogs/${blog.id}`}>
+                                                    {blog.title}
+                                                </Link>
+                                            </td>
                                             <td className="p-5 whitespace-nowrap text-sm leading-6 font-medium text-gray-900">{blog.userId}</td>
                                             <td className="px-5 py-3">
                                                 <div className="w-48 flex items-center gap-3">
