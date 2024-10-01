@@ -1,11 +1,14 @@
-import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
+import type { ActionFunction } from "@remix-run/node";
 
-import { logout } from "~/session.server";
+export const action: ActionFunction = async ({ request }) => {
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": "jwt=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict",
+    },
+  });
+};
 
-export async function action({ request }: ActionFunctionArgs) {
-  return logout(request);
-}
-
-export async function loader() {
-  return redirect("/");
-}
+export const loader = async () => {
+  return json({});
+};
