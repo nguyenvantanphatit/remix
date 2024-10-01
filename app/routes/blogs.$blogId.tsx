@@ -32,7 +32,6 @@ export default function BlogDetail() {
   const { post, comments } = useLoaderData<typeof loader>();
   const relevantComments = comments.filter((comment: any) => comment.postId === post.id);
   const shareUrl = `https://remix-pied-iota.vercel.app/blogs/${post.id}`;
-  console.log("shareUrl ========", shareUrl);
   return (
     <>
       <section className="relative pt-20 pb-24 bg-indigo-600">
