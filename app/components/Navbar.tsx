@@ -1,5 +1,4 @@
 import { Link } from '@remix-run/react'
-import React from 'react'
 
 const Navbar = () => {
   return (
@@ -26,11 +25,15 @@ const Navbar = () => {
                 <Link to="/products"
                   className="text-gray-100 text-sm lg:text-base mb-2 block  font-medium hover:text-white transition-all duration-500 lg:mr-6 md:mb-0 lg:text-left text-center">Products</Link>
               </li>
+              <li>
+                <Link to="/cart"
+                  className="text-gray-100 text-sm lg:text-base mb-2 block  font-medium hover:text-white transition-all duration-500 lg:mr-6 md:mb-0 lg:text-left text-center">Cart</Link>
+              </li>
             </ul>
             <div className="flex items-center justify-center gap-4">
-              <button
-                className=" bg-indigo-50 text-indigo-600 rounded-full cursor-pointer font-semibold text-center shadow-xs transition-all duration-500 py-3 px-6 text-sm hover:bg-indigo-100">Login
-              </button>
+              <Link to="/login"
+                className="text-gray-100 text-sm lg:text-base mb-2 block  font-medium hover:text-white transition-all duration-500 lg:mr-6 md:mb-0 lg:text-left text-center">Login
+              </Link>
               <button
                 className="max-[450px]:hidden bg-indigo-600 text-white rounded-full cursor-pointer font-semibold text-center shadow-xs transition-all duration-500 border border-white py-3 px-6 text-sm md:ml-5 hover:bg-indigo-700">Sign
                 up </button>
