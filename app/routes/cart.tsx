@@ -1,7 +1,7 @@
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, useSubmit, useFetcher, useNavigation } from "@remix-run/react";
+import { useLoaderData, useSubmit, useNavigation } from "@remix-run/react";
 import { Trash2, Plus, Minus } from 'lucide-react'
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
