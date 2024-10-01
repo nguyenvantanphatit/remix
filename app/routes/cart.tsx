@@ -1,20 +1,19 @@
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, useSubmit, useNavigation } from "@remix-run/react";
+import { useLoaderData, useSubmit, useNavigation, useFetcher } from "@remix-run/react";
 import { Trash2, Plus, Minus } from 'lucide-react'
 import { useState } from "react";
+import { getCart, removeCartItem, updateCartLine } from "~/api";
 
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
     const cookieHeader = request.headers.get('cookie');
     const cookies = new URLSearchParams(cookieHeader?.replace(/; /g, '&'));
     const jwt = cookies.get('jwt');
-    const response = await fetch(`https://api.echomedi.com/api/product/getCart`, {
-        headers: {
-            Authorization: `Bearer ${jwt}`,
-        },
-    });
-    const data = await response.json();
-    return json({ cart: data, jwt });
+    if (!jwt) {
+        throw new Response("Unauthorized", { status: 401 });
+    }
+    const cart = await getCart(jwt);
+    return json({ cart, jwt });
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -29,29 +28,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     if (intent === "update") {
         const quantity = Number(formData.get("quantity"));
-        const response = await fetch('https://api.echomedi.com/api/cart/updateCartLine', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${jwt}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id, cnt: quantity }),
-        });
+        await updateCartLine(id as string, quantity as number, jwt as string);
 
-        if (!response.ok) {
-            throw new Response("Failed to update cart", { status: response.status });
-        }
     } else if (intent === "remove") {
-        const response = await fetch(`https://api.echomedi.com/api/cart-lines/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${jwt}`,
-            },
-        });
-
-        if (!response.ok) {
-            throw new Response("Failed to remove item", { status: response.status });
-        }
+        await removeCartItem(id as string, jwt as string);
     }
 
     return null;
@@ -60,7 +40,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function Cart() {
     const { cart, jwt } = useLoaderData<typeof loader>();
     const [lines, setCartLines] = useState<any[]>(cart.user.cart_lines);
-    const submit = useSubmit();
+    const fetcher = useFetcher();
     const navigation = useNavigation();
     const handleUpdateQuantity = (id: string, newQuantity: number) => {
         setCartLines(prevLines =>
@@ -68,7 +48,7 @@ export default function Cart() {
                 line.id === id ? { ...line, quantity: newQuantity } : line
             )
         );
-        submit(
+        fetcher.submit(
             { intent: "update", id, quantity: newQuantity.toString(), jwt },
             { method: "post" }
         );
@@ -76,7 +56,7 @@ export default function Cart() {
 
     const handleRemoveItem = (id: string) => {
         setCartLines(prevLines => prevLines.filter(line => line.id !== id));
-        submit(
+        fetcher.submit(
             { intent: "remove", id, jwt },
             { method: "post" }
         );
